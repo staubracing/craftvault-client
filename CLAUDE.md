@@ -20,12 +20,13 @@ The API is open (no auth). All routes are prefixed with `/api/v1`.
 
 ## Commands
 
-```bash
-yarn dev          # Start dev server (Vite default port 5173)
-yarn build        # Production build
-yarn preview      # Preview production build
-yarn format       # Prettier formatting (set up after init)
-```
+| Command | Description |
+|---------|-------------|
+| `yarn install` | Install dependencies |
+| `yarn dev` | Start dev server (Vite default port 5173) |
+| `yarn build` | Production build (`tsc -b && vite build`) |
+| `yarn preview` | Preview production build |
+| `yarn lint` | Run ESLint (`eslint .`) |
 
 ## Design Target
 
@@ -49,9 +50,10 @@ yarn format       # Prettier formatting (set up after init)
 
 ## API Reference
 
+All entity shapes and create-input types are defined in `src/types/index.ts` — reference those rather than duplicating here.
+
 ### Response Envelope
 
-All endpoints return:
 ```json
 { "success": true, "data": { ... } }
 { "success": true, "message": "..." }          // on delete
@@ -60,119 +62,36 @@ All endpoints return:
 
 No pagination. List endpoints return all matching records. Use query params to filter.
 
-### Colors — `/api/v1/colors` (read-only)
-- `GET /` — all 491 DMC colors ordered by code
-- `GET /dmc/:code` — lookup by DMC code (e.g. `/dmc/310` → Black)
-- `GET /:id` — by UUID
+### Endpoints Summary
 
-**Color shape:** `{ id, dmc_code, symbol?, name, hex_value?, created_at }`
+| Resource | Base Path | Key Query Params | Notes |
+|----------|-----------|-----------------|-------|
+| Colors | `/api/v1/colors` | _(none)_ | Read-only, 491 DMC colors. Also `GET /dmc/:code` |
+| Zones | `/api/v1/zones` | `include_inactive` | `GET /:id` includes nested `locations[]` |
+| Locations | `/api/v1/locations` | `zone_id`, `include_inactive` | Soft delete if referenced |
+| Drills | `/api/v1/drills` | `color_id`, `location_id`, `include_inactive` | Unique on `color_id + location_id` (409). Also `GET /by-location/:id` |
+| Equipment | `/api/v1/equipment` | `category`, `status`, `location_id`, `include_inactive` | Statuses: `working`, `needs_repair`, `broken`, `retired`. Also `GET /categories`, `GET /by-location/:id` |
+| Supplies | `/api/v1/supplies` | `search`, `category`, `location_id`, `include_inactive` | `search` uses ILIKE. Also `GET /categories`, `GET /by-location/:id` |
+| Projects | `/api/v1/projects` | `status`, `include_inactive` | `GET /:id` includes `supplies[]`. Also `POST/DELETE /:id/supplies`. Auto-sets progress=100 if status→completed. Statuses: `planning`, `in_progress`, `completed`, `on_hold`, `abandoned` |
 
-### Zones — `/api/v1/zones`
-- `GET /` — `?include_inactive=true`
-- `GET /:id` — includes nested `locations[]`
-- `POST /` — `{ code, name, description?, sort_order? }`
-- `PUT /:id` — partial update
-- `DELETE /:id` — soft delete if has locations, hard if empty
+All resources support: `GET /`, `GET /:id`, `POST /`, `PUT /:id` (partial), `DELETE /:id` (soft).
 
-**Zone shape:** `{ id, code, name, description?, sort_order, is_active, created_at }`
+## Current Status
 
-### Locations — `/api/v1/locations`
-- `GET /` — `?zone_id=&include_inactive=true`
-- `GET /:id`
-- `POST /` — `{ zone_id, code, name, description?, sort_order? }`
-- `PUT /:id` — partial update
-- `DELETE /:id` — soft delete if referenced, hard if not
+**Built:** Project shell, API client layer, all routes, Layout with nav, TypeScript types for all resources.
 
-**Location shape:** `{ id, zone_id, code, name, description?, sort_order, is_active, created_at, zone_code, zone_name }`
+**Remaining:** Page implementations (Dashboard, Drills, Supplies, Equipment, Projects, Project Detail, Locations, Colors), iPad-first responsive polish, loading/error/empty states, Cloudflare Pages deployment.
 
-### Drills — `/api/v1/drills`
-- `GET /` — `?color_id=&location_id=&include_inactive=true`
-- `GET /by-location/:location_id`
-- `GET /:id`
-- `POST /` — `{ color_id, location_id, quantity, notes? }`
-- `PUT /:id` — partial update
-- `DELETE /:id` — soft delete
-
-**Drill shape:** `{ id, color_id, location_id, quantity, notes?, is_active, created_at, dmc_code, color_name, hex_value?, location_code, location_name, zone_code, zone_name }`
-
-**Note:** Unique constraint on `color_id + location_id`. Returns 409 on duplicate.
-
-### Equipment — `/api/v1/equipment`
-- `GET /categories` — distinct category strings
-- `GET /` — `?category=&status=&location_id=&include_inactive=true`
-- `GET /by-location/:location_id`
-- `GET /:id`
-- `POST /` — `{ name, category, brand?, model?, location_id?, status?, serial_number?, purchase_date?, purchase_price?, purchase_location?, notes? }`
-- `PUT /:id` — partial update
-- `DELETE /:id` — soft delete
-
-**Equipment shape:** `{ id, name, category, brand?, model?, location_id?, status, serial_number?, purchase_date?, purchase_price?, purchase_location?, notes?, is_active, created_at, location_code?, location_name?, zone_code?, zone_name? }`
-
-**Statuses:** `working`, `needs_repair`, `broken`, `retired`
-
-### Supplies — `/api/v1/supplies`
-- `GET /categories` — distinct category strings
-- `GET /` — `?search=&category=&location_id=&include_inactive=true`
-- `GET /by-location/:location_id`
-- `GET /:id`
-- `POST /` — `{ name, category, quantity?, location_id?, notes? }`
-- `PUT /:id` — partial update
-- `DELETE /:id` — soft delete
-
-**Supply shape:** `{ id, name, category, quantity, location_id?, notes?, is_active, created_at, location_code?, location_name?, zone_code?, zone_name? }`
-
-**Note:** `?search=` uses ILIKE (case-insensitive partial match on name).
-
-### Projects — `/api/v1/projects`
-- `GET /` — `?status=&include_inactive=true`
-- `GET /:id` — includes nested `supplies[]`
-- `POST /` — `{ name, description?, status?, progress?, last_worked_on?, notes? }`
-- `PUT /:id` — partial update (auto-sets progress=100 if status→completed)
-- `DELETE /:id` — soft delete
-- `POST /:id/supplies` — link a supply: `{ supply_id, quantity_needed?, notes? }`
-- `DELETE /:id/supplies/:supplyId` — unlink supply
-
-**Project shape:** `{ id, name, description?, status, progress, last_worked_on?, notes?, is_active, created_at, updated_at }`
-
-**Statuses:** `planning`, `in_progress`, `completed`, `on_hold`, `abandoned`
-
-**Project with supplies:** `{ ...project, supplies: [{ id, project_id, supply_id, quantity_needed, notes?, supply_name, supply_category, supply_quantity }] }`
-
-## Implementation Phases
-
-### Phase 1: Foundation
-1. Initialize Vite + React + TypeScript project with `yarn create vite . --template react-ts`
-2. Install dependencies: `react-router-dom`, `lucide-react` (icons)
-3. Set up project structure:
-   ```
-   src/
-     api/          — API client functions (one file per resource)
-     components/   — Shared UI components (Layout, Header, etc.)
-     pages/        — One folder per route
-     types/        — TypeScript interfaces matching API shapes
-     hooks/        — Custom hooks for data fetching
-   ```
-4. Create API client with base URL config (env var for production, localhost for dev)
-5. Set up React Router with all routes
-6. Build app shell: responsive layout with sidebar/bottom nav
-
-### Phase 2: Core Pages
-7. Build Dashboard page (quick stats, navigation cards)
-8. Build Drills page (list with color swatches, filter by DMC code, add/edit modal)
-9. Build Supplies page (list with search bar, category filter chips, add/edit modal)
-10. Build Equipment page (list with status badges, category filter, add/edit modal)
-11. Build Projects page (kanban or list view with status, progress bar)
-12. Build Project Detail page (linked supplies, add/remove supplies)
-
-### Phase 3: Supporting Pages
-13. Build Locations page (zones + nested locations, manage both)
-14. Build Colors page (searchable grid of DMC colors with swatches)
-
-### Phase 4: Polish & Deploy
-15. Responsive tweaks for iPad-first
-16. Loading states, error states, empty states
-17. Set up Cloudflare Pages deployment
-18. Add `https://craftvault.pages.dev` to server's `ALLOWED_ORIGINS`
+**Architecture:**
+```
+src/
+  api/client.ts    — Generic fetch helpers: getAll, getOne, create, update, remove, request
+  api/{resource}.ts — One file per resource, exports a {resource}Api object
+  api/index.ts     — Barrel re-export
+  types/index.ts   — All TypeScript interfaces, query param types, create input types
+  components/      — Shared UI (Layout.tsx, Layout.css)
+  pages/{route}/   — One folder per route, named exports
+```
 
 ## Environment Variables
 
@@ -190,21 +109,12 @@ VITE_API_URL=http://localhost:3002                     # development
 - **Error responses** have `{ success: false, message: string, errors?: array }` — display `message` to user, use `errors` array for field-level form validation.
 - **DELETE returns `{ success: true, message: "..." }`** — no `data` field on delete.
 
-## TypeScript Interfaces
+## Key Files
 
-Create these in `src/types/` matching the API shapes exactly:
-
-```typescript
-// All entities have these common fields:
-interface BaseEntity {
-  id: string;
-  is_active: boolean;
-  created_at: string;
-}
-
-// Color, Zone, Location, Drill, Equipment, Supply, Project, ProjectSupply
-// — shapes documented in the API Reference section above
-```
+- `src/api/client.ts` — Fetch wrapper with `ApiError` class, generic `getAll`/`getOne`/`create`/`update`/`remove` helpers, `buildQuery` for query strings
+- `src/types/index.ts` — All interfaces: entity types (`Drill`, `Equipment`, etc.), create inputs (`DrillCreateInput`), query params (`DrillQueryParams`), API response envelopes
+- `src/components/Layout.tsx` — App shell with header + sidebar nav, wraps all routes via `<Outlet />`
+- `src/main.tsx` — Entry point, `BrowserRouter` with all routes defined
 
 ## Code Style
 
@@ -213,3 +123,11 @@ interface BaseEntity {
 - Keep components co-located with their pages
 - Extract shared components to `src/components/`
 - Use CSS modules or a simple CSS approach (no CSS-in-JS runtime)
+
+## Gotchas
+
+- **`ApiError` class** — `client.ts` throws `ApiError` (not plain Error) with `status`, `message`, and `errors` fields. Catch with `instanceof ApiError` when you need field-level validation messages.
+- **`ZoneDetail` vs `Zone`** — `GET /zones/:id` returns `ZoneDetail` which includes a nested `locations[]` array. `GET /zones` returns plain `Zone[]` without locations.
+- **`by-location` endpoints** — Drills, Equipment, and Supplies each have `GET /by-location/:location_id` for filtering items in a specific location. Use these instead of filtering client-side.
+- **Drill 409 conflict** — Creating a drill with an existing `color_id + location_id` pair returns HTTP 409. Show a user-friendly message, not a generic error.
+- **Package name is `craftvault-client-temp`** in `package.json` — rename when ready to deploy.
