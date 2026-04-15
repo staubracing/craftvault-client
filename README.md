@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+# CraftVault Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React frontend for [CraftVault](https://craftvault-api.staubracing.com) — a craft supply, equipment, and project management app. The primary use case is answering **"Do I already have this?"** while shopping at craft stores.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Vite + React + TypeScript**
+- **React Router** — client-side routing
+- **Lucide React** — icons
+- **Deploy target:** Cloudflare Pages
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+yarn install
+yarn dev          # http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The app expects the CraftVault API running at `http://localhost:3002` (dev) or `https://craftvault-api.staubracing.com` (production).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Project Structure
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+  api/            — API client functions (one file per resource)
+  components/     — Shared UI components
+  pages/          — One folder per route
+  types/          — TypeScript interfaces matching API shapes
+  hooks/          — Custom hooks for data fetching
+```
+
+## Routes
+
+| Route | Page |
+|-------|------|
+| `/` | Dashboard |
+| `/drills` | Diamond painting drill inventory |
+| `/supplies` | General craft supplies |
+| `/equipment` | Craft equipment tracking |
+| `/projects` | Project list |
+| `/projects/:id` | Project detail with linked supplies |
+| `/locations` | Storage zones and containers |
+| `/colors` | DMC color reference (491 colors) |
+
+## Scripts
+
+```bash
+yarn dev          # Start dev server
+yarn build        # Production build
+yarn preview      # Preview production build
 ```
