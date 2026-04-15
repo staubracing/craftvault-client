@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp -r /Users/staubracing/Projects/Websites/craftvault-client-temp/* /Users/staubracing/Projects/Websites/craftvault-client/)",
+      "Bash(cp /Users/staubracing/Projects/Websites/craftvault-client-temp/.gitignore /Users/staubracing/Projects/Websites/craftvault-client/)",
+      "Bash(cp /Users/staubracing/Projects/Websites/craftvault-client-temp/.eslintrc.cjs /Users/staubracing/Projects/Websites/craftvault-client/)",
+      "Bash(rm -rf /Users/staubracing/Projects/Websites/craftvault-client-temp)"
+    ]
+  }
+}
