@@ -4,7 +4,10 @@
       "Bash(cp -r /Users/staubracing/Projects/Websites/craftvault-client-temp/* /Users/staubracing/Projects/Websites/craftvault-client/)",
       "Bash(cp /Users/staubracing/Projects/Websites/craftvault-client-temp/.gitignore /Users/staubracing/Projects/Websites/craftvault-client/)",
       "Bash(cp /Users/staubracing/Projects/Websites/craftvault-client-temp/.eslintrc.cjs /Users/staubracing/Projects/Websites/craftvault-client/)",
-      "Bash(rm -rf /Users/staubracing/Projects/Websites/craftvault-client-temp)"
+      "Bash(rm -rf /Users/staubracing/Projects/Websites/craftvault-client-temp)",
+      "Bash(ls /Users/staubracing/Projects/Websites/craftvault-client/.env*)",
+      "Bash(ls /Users/staubracing/Projects/Websites/craftvault-client/.prettierrc* /Users/staubracing/Projects/Websites/craftvault-client/.prettier*)",
+      "Bash(cat /Users/staubracing/Projects/Websites/craftvault-client/tsconfig*.json)"
     ]
   }
 }
