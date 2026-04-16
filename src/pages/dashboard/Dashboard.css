@@ -1,0 +1,74 @@
+/* ── Dashboard Page ──────────────────────────────────── */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-section {
+  margin-top: 1.5rem;
+}
+
+.dashboard-section h2 {
+  margin-bottom: 0.75rem;
+}
+
+.dashboard-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dashboard-project-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: box-shadow var(--transition-base),
+              transform var(--transition-fast);
+}
+
+.dashboard-project-item:hover {
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.dashboard-project-item__name {
+  font-weight: 500;
+  margin-bottom: 0.375rem;
+}
+
+.dashboard-project-item__progress {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dashboard-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-sidebar);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.dashboard-progress-bar__fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width var(--transition-slow);
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+  }
+}
