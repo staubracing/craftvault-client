@@ -57,7 +57,7 @@
 }
 
 .cv-btn--ghost:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--hover-overlay);
   color: var(--text);
 }
 
@@ -206,7 +206,7 @@
 }
 
 .cv-search__clear:hover {
-  background: rgba(0, 0, 0, 0.06);
+  background: var(--hover-overlay);
   color: var(--text);
 }
 

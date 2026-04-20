@@ -45,7 +45,7 @@
   width: 38px;
   height: 38px;
   border-radius: 6px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--swatch-border);
   flex-shrink: 0;
 }
 
@@ -78,7 +78,7 @@
   width: 56px;
   height: 56px;
   border-radius: var(--radius);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--swatch-border);
   flex-shrink: 0;
 }
 
@@ -115,7 +115,7 @@
 }
 
 .color-detail__close:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--hover-overlay);
   color: var(--text);
 }
 

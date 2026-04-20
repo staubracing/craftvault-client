@@ -8,6 +8,7 @@ import {
   MapPin,
   Palette,
 } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 import './Layout.css';
 
 const navItems = [
@@ -27,6 +28,9 @@ export function Layout() {
         <div className="app-brand">
           <Diamond size={24} />
           <h1>CraftVault</h1>
+        </div>
+        <div className="app-header__actions">
+          <ThemeToggle />
         </div>
       </header>
 
