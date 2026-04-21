@@ -23,13 +23,15 @@ async function request<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const url = `${BASE_URL}/api/v1${path}`;
-  const config: RequestInit = {
-    headers: {
+  const isFormData = options.body instanceof FormData;
+
+  const config: RequestInit = { ...options };
+  if (!isFormData) {
+    config.headers = {
       'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  };
+      ...(options.headers as Record<string, string>),
+    };
+  }
 
   const response = await fetch(url, config);
 

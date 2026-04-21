@@ -132,6 +132,28 @@ export interface EquipmentCreateInput {
   notes?: string;
 }
 
+// ── Equipment Photos ───────────────────────────────────
+
+export interface EquipmentPhoto {
+  id: string;
+  file_path: string;
+  caption?: string;
+  sort_order: number;
+  is_primary: boolean;
+  file_size: number;
+  original_filename: string;
+}
+
+export interface EquipmentDetail extends Equipment {
+  photos: EquipmentPhoto[];
+}
+
+export interface EquipmentPhotoUpdateInput {
+  caption?: string;
+  sort_order?: number;
+  is_primary?: boolean;
+}
+
 // ── Supplies ───────────────────────────────────────────
 
 export interface Supply extends BaseEntity {
